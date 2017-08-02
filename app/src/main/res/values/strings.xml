@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">AutoReg</string>
+
+    <string name="tv_this">это</string>
+    <string name="tv_text_othercod">у этого региона также есть другие кода:</string>
+    <string name="Button1">Узнать</string>
+
+    <string name="empty_text"> </string>
+</resources>
