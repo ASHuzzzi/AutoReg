@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="ru.lizzzi.autoreg">
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/autoreg_launcher"
+        android:icon="@mipmap/autoreg_launcher2"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/autoreg_launcher2_round"
         android:supportsRtl="true"
-        android:theme="@style/SplashTheme">
+        android:theme="@style/SplashTheme"
+        tools:ignore="GoogleAppIndexingWarning"
+        android:windowSoftInputMode="stateAlwaysVisible">
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>

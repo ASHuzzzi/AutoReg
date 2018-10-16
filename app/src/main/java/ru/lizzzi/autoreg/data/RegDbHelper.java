@@ -1,6 +1,8 @@
 package ru.lizzzi.autoreg.data;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -18,17 +20,12 @@ import java.io.OutputStream;
 public class RegDbHelper extends SQLiteOpenHelper {
 
     // путь к базе данных вашего приложения
+    @SuppressLint("SdCardPath")
     private static String DB_PATH = "/data/data/ru.lizzzi.autoreg/databases/";
     private static String DB_NAME = "AutoReg.db";
     private SQLiteDatabase myDataBase;
     private final Context mContext;
 
-
-    /**
-     * Конструктор
-     * Принимает и сохраняет ссылку на переданный контекст для доступа к ресурсам приложения
-     * @param context
-     */
     public RegDbHelper(Context context) {
         super(context, DB_NAME, null, 1);
         this.mContext = context;
@@ -71,7 +68,7 @@ public class RegDbHelper extends SQLiteOpenHelper {
         if(checkDB != null){
             checkDB.close();
         }
-        return checkDB != null ? true : false;
+        return checkDB != null;
     }
 
     /**
@@ -123,7 +120,71 @@ public class RegDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    // Здесь можно добавить вспомогательные методы для доступа и получения данных из БД
-    // вы можете возвращать курсоры через "return myDataBase.query(....)", это облегчит их использование
-    // в создании адаптеров для ваших view
+    public String getRegion(String stCod){
+
+        myDataBase = this.getReadableDatabase();
+
+        String stRegionResult = null;
+
+        String[] columns = {
+                RegContract.RegCod._ID,
+                RegContract.RegCod.COLUMN_COD,
+                RegContract.RegCod.COLUMN_REGION
+        };
+        String selection = RegContract.RegCod.COLUMN_COD + "=?";
+        String[] selectionArgs = {(stCod)};
+        Cursor cursor = myDataBase.query(
+                RegContract.RegCod.TABLE_NAME,
+                columns,
+                selection,             // столбцы для условия WHERE
+                selectionArgs,         // значения для условия WHERE
+                null,                  // Don't group the rows
+                null,                  // Don't filter by row groups
+                null);                 // порядок сортировки
+
+        cursor.moveToFirst();
+        if (cursor.getCount() != 0 ){
+            stRegionResult =  cursor.getString(cursor.getColumnIndex(RegContract.RegCod.COLUMN_REGION));
+        }
+
+        cursor.close();
+        return stRegionResult;
+    }
+
+    public String getCod (String stRegion){
+        myDataBase = this.getReadableDatabase();
+
+        String[] columns = {
+                RegContract.RegCod.COLUMN_COD
+        };
+        String selection = RegContract.RegCod.COLUMN_REGION + "=?";
+        String[] selectionArgs = new String[]{(stRegion)};
+        Cursor cursor = myDataBase.query(
+                RegContract.RegCod.TABLE_NAME,
+                columns,
+                selection,             // столбцы для условия WHERE
+                selectionArgs,         // значения для условия WHERE
+                null,                  // Don't group the rows
+                null,                  // Don't filter by row groups
+                null);                 // порядок сортировки
+
+
+        String stCodReult = "";
+        if (cursor.getCount() > 1 ) {
+            if (cursor.moveToFirst()) {
+                do {
+                    for (String cn : cursor.getColumnNames()) {
+                        if (!cursor.getString(cursor.getColumnIndex(RegContract.RegCod.COLUMN_COD)).equals(stRegion)){
+                            stCodReult = stCodReult.concat(cursor.getString(cursor.getColumnIndex(cn)) + "  ");
+                        }
+                    }
+
+                } while (cursor.moveToNext());
+            }
+        }
+
+        cursor.close();
+        return stCodReult;
+    }
+
 }
