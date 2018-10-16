@@ -2,8 +2,12 @@
     <string name="app_name">AutoReg</string>
 
     <string name="tv_this">это</string>
-    <string name="tv_text_othercod">у этого региона также есть другие кода:</string>
+    <string name="tv_text_othercod">Другие коды этого региона:</string>
     <string name="Button1">Узнать</string>
+
+    <string name="toast_enterMessage">Введите номер региона!</string>
+    <string name="toast_noRegion">Такого региона не существует!</string>
+    <string name="toast_errorSimbol">Код введен не правльно!</string>
 
     <string name="empty_text"> </string>
 </resources>

@@ -1,33 +1,37 @@
 package ru.lizzzi.autoreg;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
 
-import ru.lizzzi.autoreg.data.RegContract.RegCod;
 import ru.lizzzi.autoreg.data.RegDbHelper;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private RegDbHelper mDbHelper = new RegDbHelper(this);
+    private EditText mEditText;
+    private TextView mTextView;
+    private TextView mTextView2;
+    private TextView mTextView3;
+    private TextView mTextView4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView mTextView = (TextView)findViewById(R.id.tv_this);
-        TextView mTextView2 = (TextView)findViewById(R.id.tv_region);
-        TextView mTextView3 = (TextView)findViewById(R.id.tv_othercod);
-        TextView mTextView4 = (TextView)findViewById(R.id.tv_text_othercod);
+        mEditText = findViewById(R.id.editText);
+        mTextView = findViewById(R.id.tv_this);
+        mTextView2 = findViewById(R.id.tv_region);
+        mTextView3 = findViewById(R.id.tv_othercod);
+        mTextView4 = findViewById(R.id.tv_text_othercod);
 
         mTextView.setVisibility(View.INVISIBLE);
         mTextView2.setVisibility(View.INVISIBLE);
@@ -42,109 +46,89 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             throw new Error("Unable to create database");
         }
 
-        /*try {
-            mDbHelper.openDataBase();
-        }catch(SQLException sqle){
-            throw sqle;
-        }*/
-
         mDbHelper.openDataBase();
-
     }
 
     @Override
     public void onClick(View view) {
-        EditText mEditText = (EditText) findViewById(R.id.editText);
-        TextView mTextView = (TextView)findViewById(R.id.tv_this);
-        TextView mTextView2 = (TextView)findViewById(R.id.tv_region);
-        TextView mTextView3 = (TextView)findViewById(R.id.tv_othercod);
-        TextView mTextView4 = (TextView)findViewById(R.id.tv_text_othercod);
+
+        String wer = mEditText.getText().toString();
+
+        if (mEditText.getText().length() == 0) {
+            ShowToast(getResources().getString(R.string.toast_enterMessage));
+
+        } else {
+            try {
+                int num = Integer.parseInt(wer);
+                if (num > 0){
+
+                    String stRegion = mDbHelper.getRegion(wer);
+                    if (stRegion != null){
+                        mTextView2.setText(stRegion);
+                        mTextView.setVisibility(View.VISIBLE);
+                        mTextView2.setVisibility(View.VISIBLE);
+                        String stCod = mDbHelper.getCod(stRegion);
+
+                        if (stCod.length() > 1){
+                            mTextView3.setText(stCod);
+                            mTextView3.setVisibility(View.VISIBLE);
+                            mTextView4.setVisibility(View.VISIBLE);
+                        }
+
+                        //убираем клавиатуру после нажатия на кнопку
+                        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                        if (imm != null) {
+                            imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+                        }
+                    }else {
+                        ShowToast(getResources().getString(R.string.toast_noRegion));
+
+                    }
+                }else {
+                    ShowToast(getResources().getString(R.string.toast_errorSimbol));
+                }
+
+            } catch (NumberFormatException e) {
+                ShowToast(getResources().getString(R.string.toast_errorSimbol));
+            }
+        }
+    }
+
+    @Override
+    public void onStart() {
+
+        super.onStart();
+        if (mTextView2.length() > 1){
+            mTextView.setVisibility(View.VISIBLE);
+            mTextView2.setVisibility(View.VISIBLE);
+            if (mTextView3.length() > 1){
+                mTextView3.setVisibility(View.VISIBLE);
+                mTextView4.setVisibility(View.VISIBLE);
+            }
+        }else {
+            mEditText.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+            }
+        }
+    }
+
+
+    private void ShowToast (String Massage){
+
+        mTextView2.setText("");
+        mTextView3.setText("");
 
         mTextView.setVisibility(View.INVISIBLE);
         mTextView2.setVisibility(View.INVISIBLE);
         mTextView3.setVisibility(View.INVISIBLE);
         mTextView4.setVisibility(View.INVISIBLE);
-        mTextView4.setText(R.string.tv_text_othercod);
 
-        String wer = String.valueOf(mEditText.getText());
-        if (mEditText.getText().length() == 0) {
-            ShowToast("Введите номер региона!");
-        } else {
-            SQLiteDatabase db = mDbHelper.getReadableDatabase();
-            String[] projection = {
-                    RegCod._ID,
-                    RegCod.COLUMN_COD,
-                    RegCod.COLUMN_REGION
-            };
-            String selection = RegCod.COLUMN_COD + "=?";
-            String[] selectionArgs = {(wer)};
-            Cursor cursor = db.query(
-                    RegCod.TABLE_NAME,
-                    projection,
-                    selection,             // столбцы для условия WHERE
-                    selectionArgs,         // значения для условия WHERE
-                    null,                  // Don't group the rows
-                    null,                  // Don't filter by row groups
-                    null);                 // порядок сортировки
-
-            cursor.moveToFirst();
-            if (cursor.getCount() !=0 ){
-                mTextView2.setText(cursor.getString(cursor.getColumnIndex(RegCod.COLUMN_REGION)));
-                String OCod = cursor.getString(cursor.getColumnIndex(RegCod.COLUMN_REGION));
-
-                String[] projection2 = {
-                        RegCod.COLUMN_COD
-                };
-                selection = RegCod.COLUMN_REGION + "=?";
-                selectionArgs = new String[]{(OCod)};
-                cursor = db.query(
-                        RegCod.TABLE_NAME,
-                        projection2,
-                        selection,             // столбцы для условия WHERE
-                        selectionArgs,         // значения для условия WHERE
-                        null,                  // Don't group the rows
-                        null,                  // Don't filter by row groups
-                        null);                 // порядок сортировки
-
-                mTextView.setVisibility(View.VISIBLE);
-                mTextView2.setVisibility(View.VISIBLE);
-                String str = "";
-                if (cursor.getCount() > 1 ) {
-                    if (cursor.moveToFirst()) {
-                        do {
-                            for (String cn : cursor.getColumnNames()) {
-                                if (!cursor.getString(cursor.getColumnIndex(RegCod.COLUMN_COD)).equals(wer)){
-                                    str = str.concat(cursor.getString(cursor.getColumnIndex(cn)) + "  ");
-                                }
-                            }
-
-                        } while (cursor.moveToNext());
-                    }
-                    if (cursor.getCount() < 3){
-                        mTextView4.setText("у этого региона есть также другой код:");
-                    }
-                    mTextView3.setVisibility(View.VISIBLE);
-                    mTextView4.setVisibility(View.VISIBLE);
-                }
-
-                mTextView3.setText(str);
-
-                cursor.close();
-                db.close();
-
-            }else {
-                ShowToast("Такого региона не существует!");
-            }
-
-        }
-    }
-
-    void ShowToast (String Massage){
         Toast toast = Toast.makeText(this, Massage,
                 Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
-
 }
 
