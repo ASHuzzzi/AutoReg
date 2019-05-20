@@ -5,128 +5,108 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
-
 import ru.lizzzi.autoreg.data.RegDbHelper;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
-    private RegDbHelper mDbHelper = new RegDbHelper(this);
-    private EditText mEditText;
-    private TextView mTextView;
-    private TextView mTextView2;
-    private TextView mTextView3;
-    private TextView mTextView4;
+    private RegDbHelper dbHelper = new RegDbHelper(this);
+    private EditText editTextCode;
+    private TextView textThisIs;
+    private TextView textRegion;
+    private TextView textResultOfOtherCod;
+    private TextView textOtherCod;
+    InputMethodManager methodManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mEditText = findViewById(R.id.editText);
-        mTextView = findViewById(R.id.tv_this);
-        mTextView2 = findViewById(R.id.tv_region);
-        mTextView3 = findViewById(R.id.tv_othercod);
-        mTextView4 = findViewById(R.id.tv_text_othercod);
+        editTextCode = findViewById(R.id.editText);
+        textThisIs = findViewById(R.id.textThisIs);
+        textRegion = findViewById(R.id.textRegion);
+        textResultOfOtherCod = findViewById(R.id.textResultOfOtherCod);
+        textOtherCod = findViewById(R.id.textOtherCod);
+        initBiuttonSendResquest();
 
-        mTextView.setVisibility(View.INVISIBLE);
-        mTextView2.setVisibility(View.INVISIBLE);
-        mTextView3.setVisibility(View.INVISIBLE);
-        mTextView4.setVisibility(View.INVISIBLE);
-
-        mDbHelper = new RegDbHelper(this);
-
-        try {
-            mDbHelper.createDataBase();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
-        }
-
-        mDbHelper.openDataBase();
+        dbHelper = new RegDbHelper(this);
+        dbHelper.createDataBase();
+        methodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
     }
 
-    @Override
-    public void onClick(View view) {
-
-        String wer = mEditText.getText().toString();
-
-        if (mEditText.getText().length() == 0) {
-            ShowToast(getResources().getString(R.string.toast_enterMessage));
-
-        } else {
-            try {
-                int num = Integer.parseInt(wer);
-                if (num > 0){
-
-                    String stRegion = mDbHelper.getRegion(wer);
-                    if (stRegion != null){
-                        mTextView2.setText(stRegion);
-                        mTextView.setVisibility(View.VISIBLE);
-                        mTextView2.setVisibility(View.VISIBLE);
-                        String stCod = mDbHelper.getCod(stRegion);
-
-                        if (stCod.length() > 1){
-                            mTextView3.setText(stCod);
-                            mTextView3.setVisibility(View.VISIBLE);
-                            mTextView4.setVisibility(View.VISIBLE);
-                        }
-
-                        //убираем клавиатуру после нажатия на кнопку
-                        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                        if (imm != null) {
-                            imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
-                        }
-                    }else {
-                        ShowToast(getResources().getString(R.string.toast_noRegion));
-
-                    }
-                }else {
-                    ShowToast(getResources().getString(R.string.toast_errorSimbol));
+    private void initBiuttonSendResquest() {
+        Button buttonSendResquest = findViewById(R.id.buttonSendResquest);
+        buttonSendResquest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (methodManager != null) {
+                    methodManager.hideSoftInputFromWindow(editTextCode.getWindowToken(), 0);
                 }
 
-            } catch (NumberFormatException e) {
-                ShowToast(getResources().getString(R.string.toast_errorSimbol));
+                String codeEntered = editTextCode.getText().toString();
+                if (codeEntered.matches("")) {
+                    ShowToast(getResources().getString(R.string.toast_enterMessage));
+                    return;
+                }
+
+                int code = Integer.parseInt(codeEntered);
+                if (code > 0) {
+                    String resultOfQuery = dbHelper.getRegion(codeEntered);
+                    if (resultOfQuery != null) {
+                        textRegion.setText(resultOfQuery);
+                        textThisIs.setVisibility(View.VISIBLE);
+                        textRegion.setVisibility(View.VISIBLE);
+                        String otherRegionOnEnteredCode = dbHelper.getCode(resultOfQuery);
+                        if (otherRegionOnEnteredCode.length() > 1) {
+                            textResultOfOtherCod.setText(otherRegionOnEnteredCode);
+                            textResultOfOtherCod.setVisibility(View.VISIBLE);
+                            textOtherCod.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        ShowToast(getResources().getString(R.string.toast_noRegion));
+                    }
+                } else {
+                    ShowToast(getResources().getString(R.string.toast_errorSimbol));
+                }
             }
-        }
+        });
     }
 
     @Override
     public void onStart() {
-
         super.onStart();
-        if (mTextView2.length() > 1){
-            mTextView.setVisibility(View.VISIBLE);
-            mTextView2.setVisibility(View.VISIBLE);
-            if (mTextView3.length() > 1){
-                mTextView3.setVisibility(View.VISIBLE);
-                mTextView4.setVisibility(View.VISIBLE);
+        if (textRegion.length() > 1) {
+            textThisIs.setVisibility(View.VISIBLE);
+            textRegion.setVisibility(View.VISIBLE);
+            if (textResultOfOtherCod.length() > 1) {
+                textResultOfOtherCod.setVisibility(View.VISIBLE);
+                textOtherCod.setVisibility(View.VISIBLE);
             }
-        }else {
-            mEditText.requestFocus();
-            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        } else {
+            editTextCode.requestFocus();
+            if (methodManager != null) {
+                methodManager.toggleSoftInput(
+                        InputMethodManager.SHOW_FORCED,
+                        InputMethodManager.HIDE_IMPLICIT_ONLY);
             }
         }
     }
 
+    private void ShowToast (String massage) {
+        String emptyText = getResources().getString(R.string.empty_text);
+        textRegion.setText(emptyText);
+        textResultOfOtherCod.setText(emptyText);
+        textThisIs.setVisibility(View.GONE);
+        textRegion.setVisibility(View.GONE);
+        textResultOfOtherCod.setVisibility(View.GONE);
+        textOtherCod.setVisibility(View.GONE);
 
-    private void ShowToast (String Massage){
-
-        mTextView2.setText("");
-        mTextView3.setText("");
-
-        mTextView.setVisibility(View.INVISIBLE);
-        mTextView2.setVisibility(View.INVISIBLE);
-        mTextView3.setVisibility(View.INVISIBLE);
-        mTextView4.setVisibility(View.INVISIBLE);
-
-        Toast toast = Toast.makeText(this, Massage,
-                Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(this, massage, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }

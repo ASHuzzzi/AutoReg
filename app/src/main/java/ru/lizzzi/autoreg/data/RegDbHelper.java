@@ -3,7 +3,6 @@ package ru.lizzzi.autoreg.data;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -23,27 +22,21 @@ public class RegDbHelper extends SQLiteOpenHelper {
     @SuppressLint("SdCardPath")
     private static String DB_PATH = "/data/data/ru.lizzzi.autoreg/databases/";
     private static String DB_NAME = "AutoReg.db";
-    private SQLiteDatabase myDataBase;
-    private final Context mContext;
+    private SQLiteDatabase database;
+    private final Context context;
 
     public RegDbHelper(Context context) {
         super(context, DB_NAME, null, 1);
-        this.mContext = context;
-
+        this.context = context;
     }
 
     /**
      * Создает пустую базу данных и перезаписывает ее нашей собственной базой
      * */
-    public void createDataBase() throws IOException {
-        boolean dbExist = checkDataBase();
-
-        if(dbExist){
-            //ничего не делать - база уже есть
-        }else{
+    public void createDataBase() {
+        if(!checkDataBase()){
             //вызывая этот метод создаем пустую базу, позже она будет перезаписана
             this.getReadableDatabase();
-
             try {
                 copyDataBase();
             } catch (IOException e) {
@@ -57,58 +50,52 @@ public class RegDbHelper extends SQLiteOpenHelper {
      * @return true если существует, false если не существует
      */
     private boolean checkDataBase(){
-        SQLiteDatabase checkDB = null;
-
-        try{
+        database = null;
+        try {
             String myPath = DB_PATH + DB_NAME;
-            checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
-        }catch(SQLiteException e){
+            database = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+        } catch(SQLiteException e) {
             //база еще не существует
         }
-        if(checkDB != null){
-            checkDB.close();
+        if (database != null) {
+            database.close();
         }
-        return checkDB != null;
+        return database != null;
     }
 
     /**
      * Копирует базу из папки assets заместо созданной локальной БД
      * Выполняется путем копирования потока байтов.
      * */
-    private void copyDataBase() throws IOException{
+    private void copyDataBase() throws IOException {
         //Открываем локальную БД как входящий поток
-        InputStream myInput = mContext.getAssets().open(DB_NAME);
+        InputStream inputStream = context.getAssets().open(DB_NAME);
 
         //Путь ко вновь созданной БД
-        String outFileName = DB_PATH + DB_NAME;
-        //String outFileName = DB_PATH;
+        database = this.getReadableDatabase();
+        String outFileName = database.getPath();
+        database.close();
 
         //Открываем пустую базу данных как исходящий поток
-        OutputStream myOutput = new FileOutputStream(outFileName);
+        OutputStream outputStream = new FileOutputStream(outFileName);
 
         //перемещаем байты из входящего файла в исходящий
         byte[] buffer = new byte[1024];
         int length;
-        while ((length = myInput.read(buffer))>0){
-            myOutput.write(buffer, 0, length);
+        while ((length = inputStream.read(buffer))>0) {
+            outputStream.write(buffer, 0, length);
         }
 
         //закрываем потоки
-        myOutput.flush();
-        myOutput.close();
-        myInput.close();
-    }
-
-    public void openDataBase() throws SQLException {
-        //открываем БД
-        String myPath = DB_PATH + DB_NAME;
-        myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+        outputStream.flush();
+        outputStream.close();
+        inputStream.close();
     }
 
     @Override
     public synchronized void close() {
-        if(myDataBase != null)
-            myDataBase.close();
+        if(database != null)
+            database.close();
         super.close();
     }
 
@@ -120,20 +107,16 @@ public class RegDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    public String getRegion(String stCod){
-
-        myDataBase = this.getReadableDatabase();
-
-        String stRegionResult = null;
-
+    public String getRegion(String codeOfRegion) {
+        database = this.getReadableDatabase();
         String[] columns = {
                 RegContract.RegCod._ID,
                 RegContract.RegCod.COLUMN_COD,
                 RegContract.RegCod.COLUMN_REGION
         };
         String selection = RegContract.RegCod.COLUMN_COD + "=?";
-        String[] selectionArgs = {(stCod)};
-        Cursor cursor = myDataBase.query(
+        String[] selectionArgs = {(codeOfRegion)};
+        Cursor cursor = database.query(
                 RegContract.RegCod.TABLE_NAME,
                 columns,
                 selection,             // столбцы для условия WHERE
@@ -143,23 +126,23 @@ public class RegDbHelper extends SQLiteOpenHelper {
                 null);                 // порядок сортировки
 
         cursor.moveToFirst();
-        if (cursor.getCount() != 0 ){
-            stRegionResult =  cursor.getString(cursor.getColumnIndex(RegContract.RegCod.COLUMN_REGION));
+        String queryResult = null;
+        if (cursor.getCount() != 0 ) {
+            queryResult =  cursor.getString(cursor.getColumnIndex(RegContract.RegCod.COLUMN_REGION));
         }
-
         cursor.close();
-        return stRegionResult;
+        database.close();
+        return queryResult;
     }
 
-    public String getCod (String stRegion){
-        myDataBase = this.getReadableDatabase();
-
+    public String getCode(String codeOfRegion) {
+        database = this.getReadableDatabase();
         String[] columns = {
                 RegContract.RegCod.COLUMN_COD
         };
         String selection = RegContract.RegCod.COLUMN_REGION + "=?";
-        String[] selectionArgs = new String[]{(stRegion)};
-        Cursor cursor = myDataBase.query(
+        String[] selectionArgs = new String[]{(codeOfRegion)};
+        Cursor cursor = database.query(
                 RegContract.RegCod.TABLE_NAME,
                 columns,
                 selection,             // столбцы для условия WHERE
@@ -168,23 +151,21 @@ public class RegDbHelper extends SQLiteOpenHelper {
                 null,                  // Don't filter by row groups
                 null);                 // порядок сортировки
 
-
-        String stCodReult = "";
+        String queryResult = "";
         if (cursor.getCount() > 1 ) {
             if (cursor.moveToFirst()) {
                 do {
                     for (String cn : cursor.getColumnNames()) {
-                        if (!cursor.getString(cursor.getColumnIndex(RegContract.RegCod.COLUMN_COD)).equals(stRegion)){
-                            stCodReult = stCodReult.concat(cursor.getString(cursor.getColumnIndex(cn)) + "  ");
+                        if (!cursor.getString(cursor.getColumnIndex(RegContract.RegCod.COLUMN_COD)).equals(codeOfRegion)){
+                            queryResult = queryResult.concat(cursor.getString(cursor.getColumnIndex(cn)) + "  ");
                         }
                     }
 
                 } while (cursor.moveToNext());
             }
         }
-
         cursor.close();
-        return stCodReult;
+        database.close();
+        return queryResult;
     }
-
 }
