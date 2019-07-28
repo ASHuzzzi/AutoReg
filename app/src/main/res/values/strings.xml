@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">AutoReg</string>
 
-    <string name="tv_this">это</string>
-    <string name="tv_text_othercod">Другие коды этого региона:</string>
-    <string name="Button1">Узнать</string>
+    <string name="this_is">это</string>
+    <string name="othercod">Другие коды этого региона:</string>
+    <string name="ButtonSendResquest">Узнать</string>
 
     <string name="toast_enterMessage">Введите номер региона!</string>
     <string name="toast_noRegion">Такого региона не существует!</string>
