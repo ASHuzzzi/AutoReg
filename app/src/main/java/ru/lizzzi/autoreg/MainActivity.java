@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String codeEntered = editText.getText().toString();
                 if (codeEntered.length() == 0) {
-                    showToast(getResources().getString(R.string.toast_enterMessage));
+                    showToast(getResources().getString(R.string.toastEnterCodeOfRegion));
                     return;
                 }
                 if (Integer.parseInt(codeEntered) > 0) {
@@ -61,10 +61,10 @@ public class MainActivity extends AppCompatActivity {
                                     0);
                         }
                     } else {
-                        showToast(getResources().getString(R.string.toast_noRegion));
+                        showToast(getResources().getString(R.string.toastNoSuchRegion));
                     }
                 }else {
-                    showToast(getResources().getString(R.string.toast_errorSimbol));
+                    showToast(getResources().getString(R.string.toastErrorCode));
                 }
             }
         });
