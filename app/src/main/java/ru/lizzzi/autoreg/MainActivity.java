@@ -16,8 +16,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText editText;
     private TextView textThis;
     private TextView textRegion;
-    private TextView textOtherCode;
-    private TextView textOtherCode2;
+    private TextView textOtherCodeForRegion;
+    private TextView textCode;
 
     private ViewModelMain viewModel;
     private InputMethodManager inputMethodManager;
@@ -26,67 +26,56 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        viewModel = ViewModelProviders.of(this).get(ViewModelMain.class);
 
         editText = findViewById(R.id.editText);
+
+        initButtonSowRegion();
+
         textThis = findViewById(R.id.textThis);
+        textThis.setVisibility(View.GONE);
+
         textRegion = findViewById(R.id.textRegion);
-        textOtherCode = findViewById(R.id.textOtherCode);
-        textOtherCode2 = findViewById(R.id.textOtherCode2);
+        textRegion.setVisibility(View.GONE);
+
+        textOtherCodeForRegion = findViewById(R.id.textOtherCodeForRegion);
+        textOtherCodeForRegion.setVisibility(View.GONE);
+
+        textCode = findViewById(R.id.textCode);
+        textCode.setVisibility(View.GONE);
+
+        inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+    }
+
+    private void initButtonSowRegion() {
         Button buttonShowRegion = findViewById(R.id.buttonShowRegion);
         buttonShowRegion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String codeEntered = editText.getText().toString();
-                if (codeEntered.length() == 0) {
+                String enteredCode = editText.getText().toString();
+                if (enteredCode.length() == 0) {
                     showToast(getResources().getString(R.string.toastEnterCodeOfRegion));
                     return;
                 }
-                if (Integer.parseInt(codeEntered) > 0) {
-                    String region = viewModel.getRegion(codeEntered);
-                    if (region.length() > 0) {
-                        textRegion.setText(region);
-                        textThis.setVisibility(View.VISIBLE);
-                        textRegion.setVisibility(View.VISIBLE);
-                        String codeOfRegion = viewModel.getCodeOfRegion(region);
-                        if (codeOfRegion.length() > 1) {
-                            textOtherCode.setText(codeOfRegion);
-                            textOtherCode.setVisibility(View.VISIBLE);
-                            textOtherCode2.setVisibility(View.VISIBLE);
-                        }
-
-                        //убираем клавиатуру после нажатия на кнопку
-                        if (inputMethodManager != null) {
-                            inputMethodManager.hideSoftInputFromWindow(
-                                    editText.getWindowToken(),
-                                    0);
-                        }
-                    } else {
-                        showToast(getResources().getString(R.string.toastNoSuchRegion));
-                    }
-                }else {
+                if (Integer.parseInt(enteredCode) > 0) {
+                    getRegion(enteredCode);
+                } else {
                     showToast(getResources().getString(R.string.toastErrorCode));
                 }
             }
         });
-
-        textThis.setVisibility(View.INVISIBLE);
-        textRegion.setVisibility(View.INVISIBLE);
-        textOtherCode.setVisibility(View.INVISIBLE);
-        textOtherCode2.setVisibility(View.INVISIBLE);
-        viewModel = ViewModelProviders.of(this).get(ViewModelMain.class);
-        viewModel.checkStorage();
-        inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        viewModel.checkStorage();
         if (viewModel.getDefaultCodeOfRegion().length() > 0) {
             textThis.setVisibility(View.VISIBLE);
             textRegion.setVisibility(View.VISIBLE);
-            if (textOtherCode.length() > 1) {
-                textOtherCode.setVisibility(View.VISIBLE);
-                textOtherCode2.setVisibility(View.VISIBLE);
+            if (textOtherCodeForRegion.length() > 1) {
+                textOtherCodeForRegion.setVisibility(View.VISIBLE);
+                textCode.setVisibility(View.VISIBLE);
             }
         } else {
             editText.requestFocus();
@@ -98,15 +87,39 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showToast(String Massage) {
+    private void getRegion(String codeEntered){
+        String region = viewModel.getRegion(codeEntered);
+        if (region.length() > 0) {
+            textThis.setVisibility(View.VISIBLE);
+            textRegion.setVisibility(View.VISIBLE);
+            textRegion.setText(region);
+            getOtherCodeOfRegion(region);
+
+            if (inputMethodManager != null) {
+                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+            }
+        } else {
+            showToast(getResources().getString(R.string.toastNoSuchRegion));
+        }
+    }
+
+    private void getOtherCodeOfRegion(String region) {
+        String otherCodeOfRegion = viewModel.getOtherCodeOfRegion(region);
+        if (otherCodeOfRegion.length() > 1) {
+            textCode.setVisibility(View.VISIBLE);
+            textOtherCodeForRegion.setVisibility(View.VISIBLE);
+            textOtherCodeForRegion.setText(otherCodeOfRegion);
+        }
+    }
+
+    private void showToast(String toastText) {
         textRegion.setText("");
-        textOtherCode.setText("");
-        textThis.setVisibility(View.INVISIBLE);
-        textRegion.setVisibility(View.INVISIBLE);
-        textOtherCode.setVisibility(View.INVISIBLE);
-        textOtherCode2.setVisibility(View.INVISIBLE);
-        Toast toast = Toast.makeText(this, Massage,
-                Toast.LENGTH_LONG);
+        textOtherCodeForRegion.setText("");
+        textThis.setVisibility(View.GONE);
+        textRegion.setVisibility(View.GONE);
+        textOtherCodeForRegion.setVisibility(View.GONE);
+        textCode.setVisibility(View.GONE);
+        Toast toast = Toast.makeText(this, toastText, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }

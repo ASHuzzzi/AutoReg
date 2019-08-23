@@ -78,7 +78,7 @@
             android:textSize="16sp"/>
 
         <TextView
-            android:id="@+id/textOtherCode2"
+            android:id="@+id/textCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -87,7 +87,7 @@
             android:textStyle="bold"/>
 
         <TextView
-            android:id="@+id/textOtherCode"
+            android:id="@+id/textOtherCodeForRegion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
