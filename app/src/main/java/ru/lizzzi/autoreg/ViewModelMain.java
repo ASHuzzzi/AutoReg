@@ -13,19 +13,19 @@ public class ViewModelMain extends AndroidViewModel {
         sqlStorage = new SQLStorage(getApplication().getApplicationContext());
     }
 
-    public void checkStorage() {
+    void checkStorage() {
         sqlStorage.checkDataBase();
     }
 
-    public String getDefaultCodeOfRegion() {
+    String getDefaultCodeOfRegion() {
         return defaultCodeOfRegion;
     }
 
-    public String getRegion(String codeOfRegion) {
+    String getRegion(String codeOfRegion) {
         return defaultCodeOfRegion = sqlStorage.getRegion(codeOfRegion);
     }
 
-    public  String getCodeOfRegion(String region) {
-        return sqlStorage.getCod(region);
+    String getOtherCodeOfRegion(String region) {
+        return sqlStorage.getCode(region);
     }
 }
