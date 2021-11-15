@@ -1,127 +1,120 @@
-package ru.lizzzi.autoreg;
+package ru.lizzzi.autoreg
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.EditText
+import android.widget.TextView
+import android.os.Bundle
+import android.widget.Toast
+import android.view.Gravity
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.Button
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 
-public class MainActivity extends AppCompatActivity {
+class MainActivity : AppCompatActivity() {
 
-    private EditText editText;
-    private TextView textThis;
-    private TextView textRegion;
-    private TextView textOtherCodeForRegion;
-    private TextView textCode;
+    private val viewModel: ViewModelMain by viewModels()
 
-    private ViewModelMain viewModel;
-    private InputMethodManager inputMethodManager;
+    private var editText: EditText? = null
+    private var textThis: TextView? = null
+    private var textRegion: TextView? = null
+    private var textOtherCodeForRegion: TextView? = null
+    private var textCode: TextView? = null
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        viewModel = ViewModelProviders.of(this).get(ViewModelMain.class);
-
-        editText = findViewById(R.id.editText);
-
-        initButtonSowRegion();
-
-        textThis = findViewById(R.id.textThis);
-        textThis.setVisibility(View.GONE);
-
-        textRegion = findViewById(R.id.textRegion);
-        textRegion.setVisibility(View.GONE);
-
-        textOtherCodeForRegion = findViewById(R.id.textOtherCodeForRegion);
-        textOtherCodeForRegion.setVisibility(View.GONE);
-
-        textCode = findViewById(R.id.textCode);
-        textCode.setVisibility(View.GONE);
-
-        inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+    private val inputMethodManager by lazy {
+        getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
-    private void initButtonSowRegion() {
-        Button buttonShowRegion = findViewById(R.id.buttonShowRegion);
-        buttonShowRegion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String enteredCode = editText.getText().toString();
-                if (enteredCode.length() == 0) {
-                    showToast(getResources().getString(R.string.toastEnterCodeOfRegion));
-                    return;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        editText = findViewById(R.id.editText)
+
+        initButtonSowRegion()
+        textThis = findViewById(R.id.textThis)
+        textThis?.visibility = View.GONE
+
+        textRegion = findViewById(R.id.textRegion)
+        textRegion?.visibility = View.GONE
+
+        textOtherCodeForRegion = findViewById(R.id.textOtherCodeForRegion)
+        textOtherCodeForRegion?.visibility = View.GONE
+
+        textCode = findViewById(R.id.textCode)
+        textCode?.visibility = View.GONE
+    }
+
+    private fun initButtonSowRegion() {
+        val buttonShowRegion = findViewById<Button>(R.id.buttonShowRegion)
+        buttonShowRegion.setOnClickListener(View.OnClickListener {
+            editText?.let {
+                val enteredCode = it.text.toString()
+                if (enteredCode.isEmpty()) {
+                    showToast(resources.getString(R.string.toastEnterCodeOfRegion))
+                    return@OnClickListener
                 }
-                if (Integer.parseInt(enteredCode) > 0) {
-                    getRegion(enteredCode);
+                if (enteredCode.toInt() > 0) {
+                    getRegion(enteredCode)
                 } else {
-                    showToast(getResources().getString(R.string.toastErrorCode));
+                    showToast(resources.getString(R.string.toastErrorCode))
                 }
             }
-        });
+        })
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        viewModel.checkStorage();
-        if (viewModel.getDefaultCodeOfRegion().length() > 0) {
-            textThis.setVisibility(View.VISIBLE);
-            textRegion.setVisibility(View.VISIBLE);
-            if (textOtherCodeForRegion.length() > 1) {
-                textOtherCodeForRegion.setVisibility(View.VISIBLE);
-                textCode.setVisibility(View.VISIBLE);
+    public override fun onStart() {
+        super.onStart()
+        viewModel.checkStorage()
+        if (viewModel.defaultCodeOfRegion.isNotEmpty()) {
+            textThis?.visibility = View.VISIBLE
+            textRegion?.visibility = View.VISIBLE
+            if (textOtherCodeForRegion?.length()!! > 1) {
+                textOtherCodeForRegion?.visibility = View.VISIBLE
+                textCode?.visibility = View.VISIBLE
             }
         } else {
-            editText.requestFocus();
-            if (inputMethodManager != null) {
-                inputMethodManager.toggleSoftInput(
-                        InputMethodManager.SHOW_FORCED,
-                        InputMethodManager.HIDE_IMPLICIT_ONLY);
-            }
+            editText?.requestFocus()
+            inputMethodManager.toggleSoftInput(
+                InputMethodManager.SHOW_FORCED,
+                InputMethodManager.HIDE_IMPLICIT_ONLY
+            )
         }
     }
 
-    private void getRegion(String codeEntered){
-        String region = viewModel.getRegion(codeEntered);
-        if (region.length() > 0) {
-            textThis.setVisibility(View.VISIBLE);
-            textRegion.setVisibility(View.VISIBLE);
-            textRegion.setText(region);
-            getOtherCodeOfRegion(region);
-
-            if (inputMethodManager != null) {
-                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-            }
+    private fun getRegion(codeEntered: String) {
+        val region = viewModel.getRegion(codeEntered)
+        if (region.isNotEmpty()) {
+            textThis?.visibility = View.VISIBLE
+            textRegion?.visibility = View.VISIBLE
+            textRegion?.text = region
+            getOtherCodeOfRegion(region)
+            inputMethodManager.hideSoftInputFromWindow(editText?.windowToken, 0)
         } else {
-            showToast(getResources().getString(R.string.toastNoSuchRegion));
+            showToast(resources.getString(R.string.toastNoSuchRegion))
         }
     }
 
-    private void getOtherCodeOfRegion(String region) {
-        String otherCodeOfRegion = viewModel.getOtherCodeOfRegion(region);
-        if (otherCodeOfRegion.length() > 1) {
-            textCode.setVisibility(View.VISIBLE);
-            textOtherCodeForRegion.setVisibility(View.VISIBLE);
-            textOtherCodeForRegion.setText(otherCodeOfRegion);
+    private fun getOtherCodeOfRegion(region: String) {
+        val otherCodeOfRegion = viewModel.getOtherCodeOfRegion(region)
+        if (otherCodeOfRegion.length > 1) {
+            textCode?.visibility = View.VISIBLE
+            textOtherCodeForRegion?.visibility = View.VISIBLE
+            textOtherCodeForRegion?.text = otherCodeOfRegion
         }
     }
 
-    private void showToast(String toastText) {
-        textRegion.setText("");
-        textOtherCodeForRegion.setText("");
-        textThis.setVisibility(View.GONE);
-        textRegion.setVisibility(View.GONE);
-        textOtherCodeForRegion.setVisibility(View.GONE);
-        textCode.setVisibility(View.GONE);
-        Toast toast = Toast.makeText(this, toastText, Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
+    private fun showToast(toastText: String) {
+        textRegion?.text = ""
+        textOtherCodeForRegion?.text = ""
+        textThis?.visibility = View.GONE
+        textRegion?.visibility = View.GONE
+        textOtherCodeForRegion?.visibility = View.GONE
+        textCode?.visibility = View.GONE
+        val toast = Toast.makeText(this, toastText, Toast.LENGTH_LONG)
+        with(toast) {
+            this.setGravity(Gravity.CENTER, 0, 0)
+            this.show()
+        }
     }
 }
-
