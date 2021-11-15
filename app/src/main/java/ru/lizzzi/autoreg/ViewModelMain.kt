@@ -1,31 +1,22 @@
-package ru.lizzzi.autoreg;
+package ru.lizzzi.autoreg
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.support.annotation.NonNull;
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 
-public class ViewModelMain extends AndroidViewModel {
-    private SQLStorage sqlStorage;
-    private String defaultCodeOfRegion = "";
+class ViewModelMain(application: Application) : AndroidViewModel(application) {
 
-    public ViewModelMain(@NonNull Application application) {
-        super(application);
-        sqlStorage = new SQLStorage(getApplication().getApplicationContext());
+    private val sqlStorage: SQLStorage by lazy {
+        SQLStorage(getApplication<Application>().applicationContext)
+    }
+    var defaultCodeOfRegion = ""
+        private set
+
+    fun checkStorage() {
+        sqlStorage.checkDataBase()
     }
 
-    void checkStorage() {
-        sqlStorage.checkDataBase();
-    }
+    fun getRegion(codeOfRegion: String): String =
+        sqlStorage.getRegion(codeOfRegion).also { defaultCodeOfRegion = it }
 
-    String getDefaultCodeOfRegion() {
-        return defaultCodeOfRegion;
-    }
-
-    String getRegion(String codeOfRegion) {
-        return defaultCodeOfRegion = sqlStorage.getRegion(codeOfRegion);
-    }
-
-    String getOtherCodeOfRegion(String region) {
-        return sqlStorage.getCode(region);
-    }
+    fun getOtherCodeOfRegion(region: String): String = sqlStorage.getCode(region)
 }
