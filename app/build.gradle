@@ -45,6 +45,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$androidx.appcompat"
     implementation "androidx.core:core-ktx:$kotling.core"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotling.kotlinVersion"
+
     implementation "androidx.lifecycle:lifecycle-extensions:$androidx.lifecycle_extensions"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx.lifecycle_viewmodel"
     implementation "androidx.fragment:fragment-ktx:$androidx.fragment"

@@ -1,4 +1,4 @@
-package ru.lizzzi.autoreg;
+package ru.lizzzi.autoreg.data.service;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -12,6 +12,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import ru.lizzzi.autoreg.app.App;
 
 /**
  * Created by Liza on 10.05.2017.
