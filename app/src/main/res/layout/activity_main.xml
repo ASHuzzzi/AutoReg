@@ -61,30 +61,25 @@
             android:text="@string/buttonSendRequest"/>
 
         <TextView
-            android:id="@+id/textThis"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="17dp"
-            android:text="@string/thisIs"
-            android:textSize="16sp" />
-
-        <TextView
             android:id="@+id/textRegion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="20dp"
             android:text="@string/emptyText"
+            android:gravity="center_horizontal"
             android:textStyle="bold"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/textCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="15dp"
             android:text="@string/otherCode"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/textOtherCodeForRegion"
@@ -95,7 +90,8 @@
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="16dp"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:visibility="gone" />
 
     </LinearLayout>
 

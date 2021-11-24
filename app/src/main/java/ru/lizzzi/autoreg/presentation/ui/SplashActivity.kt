@@ -1,4 +1,4 @@
-package ru.lizzzi.autoreg
+package ru.lizzzi.autoreg.presentation.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
