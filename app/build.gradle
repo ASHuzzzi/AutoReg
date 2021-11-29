@@ -50,6 +50,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx.lifecycle_viewmodel"
     implementation "androidx.fragment:fragment-ktx:$androidx.fragment"
 
+    implementation "io.reactivex.rxjava3:rxjava:$rxJavaVersion"
+    implementation "io.reactivex.rxjava3:rxandroid:$rxAndroidVersion"
+
     testImplementation "junit:junit:$junit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso"
 }

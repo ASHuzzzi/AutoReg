@@ -14,11 +14,11 @@ class RegionRepositoryImpl : RegionsRepository {
         storage.checkDataBase()
     }
 
-    override fun getRegion(codeOfRegion: String): String {
-        return storage.getRegion(codeOfRegion)
+    override fun getRegionCode(codeOfRegion: String): String {
+        return storage.getRegionCode(codeOfRegion)
     }
 
-    override fun getCode(region: String): String {
-        return storage.getCode(region)
+    override fun getRegionCodes(region: String): String {
+        return storage.getRegionCodes(region)
     }
 }
