@@ -26,6 +26,10 @@ buildscript {
                 core           : '1.6.0',
                 kotlinVersion  : '1.5.30'
         ]
+
+        /* Rx */
+        rxJavaVersion = '3.0.12'
+        rxAndroidVersion = '3.0.0'
     }
 
 

@@ -1,6 +1,8 @@
 package ru.lizzzi.autoreg.domain.interactor
 
+import io.reactivex.rxjava3.core.Single
 import ru.lizzzi.autoreg.data.repository.RegionRepositoryImpl
+import ru.lizzzi.autoreg.domain.entity.Region
 import ru.lizzzi.autoreg.domain.repository.RegionsRepository
 
 class RegionInteractorImpl: RegionInteractor {
@@ -9,11 +11,23 @@ class RegionInteractorImpl: RegionInteractor {
         RegionRepositoryImpl()
     }
 
-    override fun getRegion(codeOfRegion: String): String {
-        return repository.getRegion(codeOfRegion)
+    override fun getRegion(codeOfRegion: String): Single<Region> {
+        return Single
+            .just(getRegionCode(codeOfRegion))
+            .flatMap { selectedRegionName ->
+                Single.just(getRegionCodes(selectedRegionName)).flatMap { allCodeRegion ->
+                    Single.just(
+                        Region(codeOfRegion, selectedRegionName, allCodeRegion)
+                    )
+                }
+            }
     }
 
-    override fun getCode(region: String): String {
-        return repository.getCode(region)
+    private fun getRegionCode(codeOfRegion: String): String {
+        return repository.getRegionCode(codeOfRegion)
+    }
+
+    private fun getRegionCodes(region: String): String {
+        return repository.getRegionCodes(region)
     }
 }

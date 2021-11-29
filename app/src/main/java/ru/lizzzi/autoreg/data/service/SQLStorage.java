@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import ru.lizzzi.autoreg.app.App;
-
 /**
  * Created by Liza on 10.05.2017.
  */
@@ -94,7 +92,7 @@ public class SQLStorage extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    public String getRegion(String codeOfRegion) {
+    public String getRegionCode(String codeOfRegion) {
         database = this.getReadableDatabase();
         String[] columns = { RegionAndCode.COLUMN_REGION };
         String selection = RegionAndCode.COLUMN_CODE + "=?";
@@ -117,7 +115,7 @@ public class SQLStorage extends SQLiteOpenHelper {
         return regionResult;
     }
 
-    public String getCode(String region) {
+    public String getRegionCodes(String region) {
         database = this.getReadableDatabase();
         String[] columns = { RegionAndCode.COLUMN_CODE};
         String selection = RegionAndCode.COLUMN_REGION + "=?";
