@@ -4,5 +4,5 @@ interface RegionsRepository {
 
     fun getRegionCode(codeOfRegion: String): String
 
-    fun getRegionCodes(region: String): String
+    fun getRegionCodes(codeOfRegion: String, region: String): String
 }

@@ -70,6 +70,8 @@ class MainActivity : AppCompatActivity() {
                     textCode?.visibility = View.VISIBLE
                     textOtherCodeForRegion?.visibility = View.VISIBLE
                     textOtherCodeForRegion?.text = region.allCodeRegion
+                } else {
+                    hideOtherCodeInfo()
                 }
             } else {
                 hideRegionInfo()
@@ -96,6 +98,11 @@ class MainActivity : AppCompatActivity() {
             it.text = ""
             it.visibility = View.GONE
         }
+
+        hideOtherCodeInfo()
+    }
+
+    private fun hideOtherCodeInfo() {
         textOtherCodeForRegion?.let{
             it.text = ""
             it.visibility = View.GONE

@@ -5,10 +5,6 @@ import android.content.Context
 
 class App: Application() {
 
-    init {
-        instance = this
-    }
-
     companion object {
         private var instance: App? = null
 
@@ -17,8 +13,7 @@ class App: Application() {
         }
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        val context: Context = App.applicationContext()
+    init {
+        instance = this
     }
 }

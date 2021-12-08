@@ -15,7 +15,7 @@ class RegionInteractorImpl: RegionInteractor {
         return Single
             .just(getRegionCode(codeOfRegion))
             .flatMap { selectedRegionName ->
-                Single.just(getRegionCodes(selectedRegionName)).flatMap { allCodeRegion ->
+                Single.just(getRegionCodes(codeOfRegion, selectedRegionName)).flatMap { allCodeRegion ->
                     Single.just(
                         Region(codeOfRegion, selectedRegionName, allCodeRegion)
                     )
@@ -27,7 +27,7 @@ class RegionInteractorImpl: RegionInteractor {
         return repository.getRegionCode(codeOfRegion)
     }
 
-    private fun getRegionCodes(region: String): String {
-        return repository.getRegionCodes(region)
+    private fun getRegionCodes(codeOfRegion: String, region: String): String {
+        return repository.getRegionCodes(codeOfRegion, region)
     }
 }
