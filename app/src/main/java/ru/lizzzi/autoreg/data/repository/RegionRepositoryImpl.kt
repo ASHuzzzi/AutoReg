@@ -10,15 +10,11 @@ class RegionRepositoryImpl : RegionsRepository {
         SQLStorage(applicationContext())
     }
 
-    init {
-        storage.checkDataBase()
-    }
-
     override fun getRegionCode(codeOfRegion: String): String {
         return storage.getRegionCode(codeOfRegion)
     }
 
-    override fun getRegionCodes(region: String): String {
-        return storage.getRegionCodes(region)
+    override fun getRegionCodes(codeOfRegion: String, region: String): String {
+        return storage.getRegionCodes(codeOfRegion, region)
     }
 }
