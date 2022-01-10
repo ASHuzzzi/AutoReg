@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">AutoReg</string>
     <string name="thisIs">это</string>
-    <string name="otherCode">Другие коды этого региона:</string>
+    <string name="otherCode">"Другие коды этого региона:"</string>
     <string name="buttonSendRequest">Узнать</string>
     <string name="toastEnterCodeOfRegion">Введите номер региона!</string>
     <string name="toastNoSuchRegion">Такого региона не существует!</string>
     <string name="toastErrorCode">Код введен не правльно!</string>
     <string name="emptyText"> </string>
+    <string name="region">Регион</string>
 </resources>

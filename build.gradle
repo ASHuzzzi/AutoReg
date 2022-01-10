@@ -1,29 +1,59 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    ext {
+        app = [
+                id               : 'ru.lizzzi.autoreg',
+                minSdkVersion    : 21,
+                targetSdkVersion : 30,
+                compileSdkVersion: 31,
+                buildToolsVersion: '30.0.0'
+        ]
+
+        androidx = [
+                appcompat           : '1.4.0',
+                lifecycle_extensions: '2.2.0',
+                lifecycle_viewmodel : '2.4.0',
+                fragment            : '1.4.0'
+        ]
+
+        /* Test */
+        junit = "4.13.2"
+        espresso = "3.4.0"
+
+        /* Kotlin */
+        kotling = [
+                core           : '1.7.0',
+                kotlinVersion  : '1.6.0'
+        ]
+
+        /* Rx */
+        rxJavaVersion = '3.0.12'
+        rxAndroidVersion = '3.0.0'
+
+        /* Compose */
+        compose = [
+                core                : '1.0.5',
+                kotlinVersion       : '1.5.31',
+                activity_compose    : '1.4.0'
+        ]
+    }
+
+
     repositories {
-        jcenter()
-        maven {
-            url 'https://maven.google.com/'
-            name 'Google'
-        }
+        mavenCentral()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.2'
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotling.kotlinVersion"
     }
 }
 
 allprojects {
     repositories {
-        jcenter()
-        maven {
-            url 'https://maven.google.com/'
-            name 'Google'
-        }
+        mavenCentral()
+        google()
     }
 }
 
