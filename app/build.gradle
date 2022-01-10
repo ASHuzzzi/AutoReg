@@ -14,7 +14,18 @@ android {
 
     buildFeatures {
         viewBinding true
+        compose true
     }
+
+    composeOptions {
+        kotlinCompilerVersion "$compose.kotlinVersion"
+        kotlinCompilerExtensionVersion "$compose.core"
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
 
     defaultConfig {
         applicationId app.id
@@ -44,7 +55,6 @@ dependencies {
 
     implementation "androidx.appcompat:appcompat:$androidx.appcompat"
     implementation "androidx.core:core-ktx:$kotling.core"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotling.kotlinVersion"
 
     implementation "androidx.lifecycle:lifecycle-extensions:$androidx.lifecycle_extensions"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx.lifecycle_viewmodel"
@@ -52,6 +62,13 @@ dependencies {
 
     implementation "io.reactivex.rxjava3:rxjava:$rxJavaVersion"
     implementation "io.reactivex.rxjava3:rxandroid:$rxAndroidVersion"
+
+    implementation "androidx.compose.ui:ui:$compose.core"
+    implementation "androidx.compose.ui:ui-tooling:$compose.core"
+    implementation "androidx.compose.foundation:foundation:$compose.core"
+    implementation "androidx.compose.material:material:$compose.core"
+    implementation "androidx.activity:activity-compose:$compose.activity_compose"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose.core"
 
     testImplementation "junit:junit:$junit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso"
