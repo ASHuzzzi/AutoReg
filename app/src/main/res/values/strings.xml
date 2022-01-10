@@ -7,4 +7,5 @@
     <string name="toastNoSuchRegion">Такого региона не существует!</string>
     <string name="toastErrorCode">Код введен не правльно!</string>
     <string name="emptyText"> </string>
+    <string name="region">Регион</string>
 </resources>
