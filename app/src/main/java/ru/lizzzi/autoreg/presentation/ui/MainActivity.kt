@@ -3,12 +3,11 @@ package ru.lizzzi.autoreg.presentation.ui
 import android.os.Bundle
 import android.widget.Toast
 import android.view.Gravity
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import ru.lizzzi.autoreg.R
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     private val viewModel: ViewModelMain by viewModels()
 
@@ -31,11 +30,11 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        viewModel.viewState.observe(this) {
+        /*viewModel.viewState.observe(this) {
             if (it.regionName.isEmpty()) {
                 showToast(R.string.toastNoSuchRegion)
             }
-        }
+        }*/
     }
 
     private fun showToast(toastTextResource: Int) {

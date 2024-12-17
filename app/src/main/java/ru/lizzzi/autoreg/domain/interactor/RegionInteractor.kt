@@ -1,9 +1,9 @@
 package ru.lizzzi.autoreg.domain.interactor
 
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 import ru.lizzzi.autoreg.domain.entity.Region
 
 interface RegionInteractor {
 
-    fun getRegion(codeOfRegion: String): Single<Region>
+    fun getRegion(codeOfRegion: String): Flow<Region>
 }

@@ -1,13 +1,21 @@
 package ru.lizzzi.autoreg.presentation.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -23,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.lizzzi.autoreg.R
 
 
@@ -37,7 +46,7 @@ fun MainScreen(
     viewModelMain: ViewModelMain = ViewModelMain(),
     screenCallbacks: MainScreenCallbacks
 ) {
-    val viewState by viewModelMain.viewState.observeAsState(initial = ViewModelMain.ViewState())
+    val viewState by viewModelMain.viewState.collectAsStateWithLifecycle()
 
     val textState = rememberSaveable { mutableStateOf("") }
 
@@ -59,11 +68,11 @@ fun MainScreen(
                 fontSize = 25.sp),
             modifier = Modifier.padding(top = 20.dp),
             shape = RoundedCornerShape(20.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
+            colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.Black,
                 unfocusedBorderColor = Color.Black,
-                cursorColor = colorResource(R.color.colorPrimaryDark),
-                backgroundColor = Color.Transparent),
+                cursorColor = colorResource(R.color.colorPrimaryDark)
+            ),
             label =  {
                 if (viewState.codeRegion.isNotEmpty()) {
                     Text(
@@ -79,7 +88,7 @@ fun MainScreen(
         Button(
             onClick = { checkTextState(textState.value, screenCallbacks, focusManager) },
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(R.color.colorPrimaryDark)
+                containerColor = colorResource(R.color.colorPrimaryDark)
             ),
             modifier = Modifier
                 .padding(top = 20.dp)
