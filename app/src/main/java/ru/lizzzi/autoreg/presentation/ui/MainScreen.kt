@@ -15,12 +15,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -31,22 +31,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.lizzzi.autoreg.R
 
 
-interface MainScreenCallbacks {
-    fun getNewRegion(newRegionCode: String)
-
-    fun showMessage(toastTextResource: Int)
-}
-
 @Composable
 fun MainScreen(
-    viewModelMain: ViewModelMain = ViewModelMain(),
-    screenCallbacks: MainScreenCallbacks
+    mainViewModel: MainViewModel = viewModel(),
+    onNewRegionClick: (String) -> Unit,
 ) {
-    val viewState by viewModelMain.viewState.collectAsStateWithLifecycle()
+    val viewState by mainViewModel.viewState.collectAsState()
 
     val textState = rememberSaveable { mutableStateOf("") }
 
@@ -61,7 +55,7 @@ fun MainScreen(
             onValueChange = { newValue -> textState.value = newValue },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.NumberPassword
             ),
             textStyle = LocalTextStyle.current.copy(
                 textAlign = TextAlign.Center,
@@ -81,12 +75,22 @@ fun MainScreen(
                     )
                 } },
             keyboardActions = KeyboardActions(
-                onDone = { checkTextState(textState.value, screenCallbacks, focusManager) }
+                onDone = {
+                    if (textState.value.isNotEmpty() && textState.value.toInt() > 0) {
+                        focusManager.clearFocus()
+                    }
+                    onNewRegionClick(textState.value)
+                }
             ),
         )
         
         Button(
-            onClick = { checkTextState(textState.value, screenCallbacks, focusManager) },
+            onClick = {
+                if (textState.value.isNotEmpty() && textState.value.toInt() > 0) {
+                    focusManager.clearFocus()
+                }
+                onNewRegionClick(textState.value)
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(R.color.colorPrimaryDark)
             ),
@@ -121,34 +125,10 @@ fun MainScreen(
     }
 }
 
-private fun checkTextState (textStateValue: String,
-                            screenCallbacks: MainScreenCallbacks,
-                            focusManager: FocusManager
-) {
-    if (textStateValue.isEmpty()) {
-        screenCallbacks.showMessage(R.string.toastEnterCodeOfRegion)
-    } else {
-        if (textStateValue.toInt() > 0 ) {
-            focusManager.clearFocus()
-            screenCallbacks.getNewRegion(textStateValue)
-        } else {
-            screenCallbacks.showMessage(R.string.toastErrorCode)
-        }
-    }
-}
-
 
 @Preview("Main screen", showBackground = true)
 @Composable
 private fun ShowMainScreen() {
-    MainScreen(screenCallbacks = object : MainScreenCallbacks {
-        override fun getNewRegion(newRegionCode: String) {
-
-        }
-
-        override fun showMessage(toastTextResource: Int) {
-
-        }
-    })
+    MainScreen {}
 }
 
