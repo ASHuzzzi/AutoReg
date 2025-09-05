@@ -16,6 +16,7 @@
         android:windowSoftInputMode="stateAlwaysVisible">
         <activity
             android:name=".presentation.ui.SplashActivity"
+            android:exported="true"
             android:theme="@style/AppTheme.Launcher"
             android:screenOrientation="portrait"
             android:noHistory="true">

@@ -1,6 +1,7 @@
 package ru.lizzzi.autoreg.domain.interactor
 
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import ru.lizzzi.autoreg.data.repository.RegionRepositoryImpl
 import ru.lizzzi.autoreg.domain.entity.Region
 import ru.lizzzi.autoreg.domain.repository.RegionsRepository
@@ -11,16 +12,12 @@ class RegionInteractorImpl: RegionInteractor {
         RegionRepositoryImpl()
     }
 
-    override fun getRegion(codeOfRegion: String): Single<Region> {
-        return Single
-            .just(getRegionCode(codeOfRegion))
-            .flatMap { selectedRegionName ->
-                Single.just(getRegionCodes(codeOfRegion, selectedRegionName)).flatMap { allCodeRegion ->
-                    Single.just(
-                        Region(codeOfRegion, selectedRegionName, allCodeRegion)
-                    )
-                }
-            }
+    override fun getRegion(codeOfRegion: String): Flow<Region> {
+        return flow {
+            val selectedRegionName = getRegionCode(codeOfRegion)
+            val allCodeRegion = getRegionCodes(codeOfRegion, selectedRegionName)
+            emit(Region(codeOfRegion, selectedRegionName, allCodeRegion))
+        }
     }
 
     private fun getRegionCode(codeOfRegion: String): String {
